@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase Server Auth</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script
+      src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"
+      defer
+    ></script>
+    <script
+      src="https://www.gstatic.com/firebasejs/8.0.1/firebase-auth.js"
+      defer
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"
+      defer
+    ></script>
+  </head>
+  <body>
+    <main>
+      <section>
+        <form id="login" action="/login" method="post">
+          <h1>Sign in</h1>
+          <label>Login</label>
+          <input type="text" name="username"/>
+          <label>Password</label>
+          <input type="password" name="password" />
+          <input type="submit" value="Log in">
+        </form>
+      </section>
+
+    </main>
+  </body>
+  <style>
+    *{margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif;}
+html, body, main{
+    height: 100%;
+}
+section{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:  rgb(49, 152, 221);
+}
+form{
+    width: 400px;
+    border-radius: 5px;
+    background-color: #fff;
+    padding: 30px;
+    font-weight: 600;
+}
+form h1{
+    text-align: center;
+}
+form *{
+    width: 100%;
+    margin-bottom: 20px;
+}
+form label{
+}
+form input{
+    margin-top: 5px;
+    padding: 5px;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid rgb(46, 169, 250);
+    font-size: 16px;
+    height: 35px;
+    transition: all .2s;
+}
+form input:focus{
+    background-color: rgba(46, 169, 250, .1);
+}
+form input[type="submit"]{
+    margin: 0;
+    cursor: pointer;
+    background-color: rgb(46, 169, 250);
+    outline: none;
+    border: none;
+    padding: 7px;
+    color: #fff;
+    text-transform: uppercase;
+}
+form input[type="submit"]:hover{
+    background-color: rgb(34, 136, 204);
+}
+
+/* ---------------------------------- Login ----------------------------------- */
+
+  </style>
+</html>

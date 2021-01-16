@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/js/fontawesome.min.js" integrity="sha512-pafh0hrrT9ZPZl/jx0cwyp7N2+ozgQf+YK94jSupHHLD2lcEYTLxEju4mW/2sbn4qFEfxJGZyIX/yJiQvgglpw==" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Welcome <%= stdName %></h1>
+            <a href="/sessionLogout"><i class="fas fa-sign-out-alt"></i>Log outs</a>
+        </div>
+        
+    </header>
+    <main>
+        
+        <div class="container">
+            <div class="left">
+                <canvas id="chart-1" width="400" height="400"></canvas>
+                <table id="table-1">
+                    <thead>
+                        <tr>
+                            <td>STT</td>
+                            <td>Ngày vắng mặt</td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="right">
+                <canvas id="chart-2" width="400" height="400"></canvas>
+                <table id="table-2">
+                    <thead>
+                        <tr>
+                            <td>STT</td>
+                            <td>Ngày đi trễ</td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+    </main>
+</body>
+<style>
+    *{margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif;}
+    html, body, main{
+    height: 100%;
+}
+    .container{
+        margin: 0 auto;
+        max-width: 1000px;
+        overflow: hidden;
+    }
+    header{
+        background-color:  rgb(49, 152, 221);
+        padding:  15px 0;
+    }
+    header .container{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+    }
+    header .container a{
+        color: #fff;
+        text-decoration: none;
+    }
+    main .container{
+        padding-top: 50px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .container .left{
+        width: 45%;
+    }
+    .container .right{
+        width: 45%;
+    }
+    main .container table{
+        margin: 30px auto 0;
+        border-collapse: collapse;
+        width: 70%;
+        border-spacing: 10px;
+    }
+    main .container table thead{
+        background-color: rgb(49, 152, 221);
+        color: #fff;
+    }
+    main .container table tr{
+    }
+    main .container table tr:nth-child(even){
+        background-color: rgba(162, 211, 243, 0.8);
+        
+    }
+    main .container table tr td{
+        padding: 10px;
+    }
+    main .container table tr td:last-child{
+        text-align: right;
+    }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
+<script>
+    var data = '<%= data %>';
+    var time = '<%= time %>';
+    var checkIn = '<%= data.checkIn %>'.split(',');
+    var dayCheckIn = checkIn.map(ele => ele.split(" ")[1]);
+    var schedule = '<%= schedule %>'.split(',');
+    var absentDay_table = document.querySelector("#table-1 tbody");
+    var lateDay_table = document.querySelector("#table-2 tbody");
+
+    var chart1 = document.getElementById('chart-1').getContext('2d');
+    var chart2 = document.getElementById('chart-2').getContext('2d');
+    //số ngày đi học
+    var presentDay_number = (dayCheckIn.length / schedule.length) *100;
+
+
+    //--------------------------------chart 1-----------------------------
+    var absentDay_number = 100 - presentDay_number;
+    var absentDay = schedule.filter(element => {
+
+        if(!dayCheckIn.includes(element)){
+            return element;
+        }
+    })
+    htmlDoc = insertTable(absentDay);
+    absentDay_table.insertAdjacentHTML('beforeend',htmlDoc);
+
+
+    //--------------------------------chart 2-----------------------------
+    var lateDay = checkTime(checkIn, time);
+    var lateDay_number = (lateDay.length / dayCheckIn.length) * 100;
+    var onTimeDay_number = 100 - lateDay_number;
+
+    htmlDoc2 = insertTable(lateDay);
+    lateDay_table.insertAdjacentHTML('beforeend', htmlDoc2);
+
+    data_presentDay = {
+        datasets: [{
+            data: [  presentDay_number.toFixed(0), absentDay_number.toFixed(0) ],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)'
+            ]
+        }],
+        labels: [
+            'Study Day (%)',
+            'Absent Day (%)'
+        ]
+    };
+    var myDoughnutChart1 = new Chart(chart1, {
+        type: 'doughnut',
+        data: data_presentDay,
+        options: {
+            
+        }
+    });
+
+    data_lateDay = {
+        datasets: [{
+            data: [  onTimeDay_number.toFixed(0), lateDay_number.toFixed(0) ],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)'
+            ]
+        }],
+        labels: [
+            'On time (%)',
+            'Late (%)'
+        ]
+    };
+
+    var myDoughnutChart2 = new Chart(chart2, {
+        type: 'doughnut',
+        data: data_lateDay,
+        options: {
+            
+        }
+    })
+
+function insertTable(arr){
+    var output = '';
+    arr.map((element, index) =>{
+        output += `
+            <tr>
+                <td>${index+1}</td>    
+                <td>${element}</td>    
+            </tr>
+        `;
+    });
+    return output;
+}
+
+function checkTime(checkIn, time){
+    var output = [];
+    output = checkIn.filter(element =>{
+        var timeCheckIn = element.split(" ");
+        var splitedTimeCheckIn = timeCheckIn[0].split(":");
+        var onTime = time.split(":");
+        if(parseInt(splitedTimeCheckIn[0]) === parseInt(onTime[0])){//hour
+            if(parseInt(splitedTimeCheckIn[1]) !== parseInt(onTime[1])){
+                return element;
+            }
+        }
+        else if(parseInt(splitedTimeCheckIn[0]) > parseInt(onTime[0])){
+            return element;
+        }
+    })
+    return output;
+}
+</script>
+</html>

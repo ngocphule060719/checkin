@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Welcome <%= adName%></h1>
+            <a href="/sessionLogout"><i class="fas fa-sign-out-alt"></i>Log outs</a>
+        </div>
+        
+    </header>
+    <div class="container">
+        <div class="chart-container">
+            <h2>Thống kê sinh viên đi học</h2>
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="student-list">
+            <h2>Danh sach sinh vien</h2>
+            <input type="text" placeholder="Search student" id="search">
+            <div class="limit-height">
+                <table id="std-table">
+                    <thead>
+                        <tr>
+                            <td>STT</td>
+                            <td>MSSV</td>
+                            <td>Ten</td>
+                            <td>Lop</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% userInfo.forEach((std, idx) => { %>
+                            <tr>
+                                <td><%= idx+1 %></td>
+                                <td><%= std.studentId %></td>
+                                <td><%= std.name %></td>
+                                <td><%= std.class %></td>
+                                
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
+<style>
+    *{margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif;}
+        html, body, main{
+        height: 100%;
+    }
+    h2{text-align: center;margin: 30px 0;}
+    .container{
+        margin: 0 auto;
+        max-width: 1000px;
+        overflow: hidden;
+    }
+    header{
+        background-color:  rgb(49, 152, 221);
+        padding:  15px 0;
+    }
+    header .container{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+    }
+    header .container a{
+        color: #fff;
+        text-decoration: none;
+    }
+    main .container{
+        padding-top: 50px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .container .left{
+        width: 45%;
+    }
+    .container .right{
+        width: 45%;
+    }
+    .container .student-list{
+        padding-bottom: 50px;
+    }
+    .container h2, .container input{
+        width: 70%;
+        margin: 30px auto;
+        display: block;
+    }
+    .container input{
+        height: 35px;
+        outline: none;
+        padding: 10px;
+        font-size: 16px;
+    }
+    .limit-height{
+        max-height: 400px;
+        overflow-y: scroll;
+        width: 70%;
+        margin: 30px auto 0;
+    }
+    table{
+        border-collapse: collapse;
+        width: 100%;
+        border-spacing: 10px;
+    }
+    table thead{
+        background-color: rgb(49, 152, 221);
+        color: #fff;
+    }
+    table tr{
+    }
+    table tr:nth-child(even){
+        background-color: rgba(162, 211, 243, 0.8);
+        
+    }
+    table tr td{
+        padding: 10px;
+    }
+    table tr td:last-child{
+        text-align: right;
+    }
+</style>
+<script>
+    var classSchedule = '<%- JSON.stringify(pointList) %>';
+    classSchedule = Object.values(JSON.parse(classSchedule));
+    var day = classSchedule.map(ele => ele.day);
+    
+    var stdCheckIn = classSchedule.map(ele => ele.presentStudent.length);
+    // console.log(classSchedule);
+    var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+        
+        // The data for our dataset
+        data: {
+            labels: day,
+            datasets: [{
+                label: 'Sinh viên đi học',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: stdCheckIn
+            }]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+
+    $("#search").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#std-table tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+</script>
+</html>
